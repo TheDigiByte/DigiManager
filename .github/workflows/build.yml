@@ -74,6 +74,17 @@ jobs:
           name: DigiManager-v${{ github.event.inputs.version }}-Windows
           path: output/*
 
+      - name: Check MAIN_ACC_TOKEN Secret
+        shell: bash
+        env:
+          TOKEN_VAL: ${{ secrets.MAIN_ACC_TOKEN }}
+        run: |
+          if [ -z "$TOKEN_VAL" ]; then
+            echo "::error::[ERROR] MAIN_ACC_TOKEN is not found or empty in repository secrets!"
+            echo "Please make sure MAIN_ACC_TOKEN exists in: https://github.com/DigiByte-PC/DigiManager/settings/secrets/actions"
+            exit 1
+          fi
+
       - name: Publish Release to Main Account (TheDigiByte/DigiManager)
         uses: softprops/action-gh-release@v2
         with:
