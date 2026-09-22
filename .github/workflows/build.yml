@@ -47,9 +47,6 @@ jobs:
       - name: Build Standalone Portable .EXE
         run: npx @tauri-apps/cli build --no-bundle
 
-      - name: Build Full MSI Installer
-        run: npx @tauri-apps/cli build
-
       - name: Organize Output Artifacts
         shell: bash
         run: |
@@ -58,12 +55,11 @@ jobs:
           # Copy Portable .EXE
           if [ -f "src-tauri/target/release/DigiManager.exe" ]; then
             cp "src-tauri/target/release/DigiManager.exe" output/DigiManager-v${{ github.event.inputs.version }}-Portable.exe
+            cp "src-tauri/target/release/DigiManager.exe" output/DigiManager.exe
           elif [ -f "src-tauri/target/release/digimanager.exe" ]; then
             cp "src-tauri/target/release/digimanager.exe" output/DigiManager-v${{ github.event.inputs.version }}-Portable.exe
+            cp "src-tauri/target/release/digimanager.exe" output/DigiManager.exe
           fi
-          
-          # Copy MSI Installer
-          find src-tauri/target/release/bundle/msi -name "*.msi" -exec cp {} output/DigiManager-v${{ github.event.inputs.version }}-Setup.msi \;
           
           echo "Generated Files:"
           ls -lh output/
@@ -71,7 +67,7 @@ jobs:
       - name: Upload Artifacts (Actions Backup)
         uses: actions/upload-artifact@v4
         with:
-          name: DigiManager-v${{ github.event.inputs.version }}-Windows
+          name: DigiManager-v${{ github.event.inputs.version }}-Portable
           path: output/*
 
       - name: Check MAIN_ACC_TOKEN Secret
@@ -98,9 +94,8 @@ jobs:
             ${{ github.event.inputs.release_notes }}
             
             ---
-            ### ⬇️ Downloads
-            - **Portable (.exe)**: รันได้ทันที ไม่ต้องติดตั้ง
-            - **Setup (.msi)**: ตัวติดตั้งเต็มรูปแบบพร้อม Shortcut
+            ### ⬇️ Download
+            - **DigiManager.exe (Portable)**: ดับเบิ้ลคลิกรันใช้งานได้ทันที ไม่ต้องติดตั้ง
           files: output/*
           draft: false
           prerelease: false
