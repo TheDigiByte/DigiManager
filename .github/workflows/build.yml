@@ -1,0 +1,95 @@
+name: Build & Release DigiManager
+
+run-name: Build & Release v${{ github.event.inputs.version }} to TheDigiByte/DigiManager
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Build Version (e.g. 0.2.0, 0.2.1)"
+        required: true
+        default: "0.2.0"
+      release_title:
+        description: "Release Title (Leave blank for default)"
+        required: false
+        default: ""
+      release_notes:
+        description: "Release Notes / Changelog (Optional)"
+        required: false
+        default: "Official DigiManager Release."
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build Windows Application & Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code from Org
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Update Version in All Project Configs
+        run: node scripts/set-version.cjs "${{ github.event.inputs.version }}"
+
+      - name: Build Standalone Portable .EXE
+        run: npx @tauri-apps/cli build --no-bundle
+
+      - name: Build Full MSI Installer
+        run: npx @tauri-apps/cli build
+
+      - name: Organize Output Artifacts
+        shell: bash
+        run: |
+          mkdir -p output
+          
+          # Copy Portable .EXE
+          if [ -f "src-tauri/target/release/DigiManager.exe" ]; then
+            cp "src-tauri/target/release/DigiManager.exe" output/DigiManager-v${{ github.event.inputs.version }}-Portable.exe
+          elif [ -f "src-tauri/target/release/digimanager.exe" ]; then
+            cp "src-tauri/target/release/digimanager.exe" output/DigiManager-v${{ github.event.inputs.version }}-Portable.exe
+          fi
+          
+          # Copy MSI Installer
+          find src-tauri/target/release/bundle/msi -name "*.msi" -exec cp {} output/DigiManager-v${{ github.event.inputs.version }}-Setup.msi \;
+          
+          echo "Generated Files:"
+          ls -lh output/
+
+      - name: Upload Artifacts (Actions Backup)
+        uses: actions/upload-artifact@v4
+        with:
+          name: DigiManager-v${{ github.event.inputs.version }}-Windows
+          path: output/*
+
+      - name: Publish Release to Main Account (TheDigiByte/DigiManager)
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: "TheDigiByte/DigiManager"
+          token: ${{ secrets.MAIN_ACC_TOKEN }}
+          tag_name: v${{ github.event.inputs.version }}
+          name: ${{ github.event.inputs.release_title != '' && github.event.inputs.release_title || format('DigiManager v{0}', github.event.inputs.version) }}
+          body: |
+            ## 📦 DigiManager v${{ github.event.inputs.version }}
+            
+            ${{ github.event.inputs.release_notes }}
+            
+            ---
+            ### ⬇️ Downloads
+            - **Portable (.exe)**: รันได้ทันที ไม่ต้องติดตั้ง
+            - **Setup (.msi)**: ตัวติดตั้งเต็มรูปแบบพร้อม Shortcut
+          files: output/*
+          draft: false
+          prerelease: false
