@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import { invoke } from '@tauri-apps/api/core';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { listen } from '@tauri-apps/api/event';
-import { API_BASE_URL, APP_VERSION, getApiBaseUrl } from '../config';
+import { APP_VERSION, getApiBaseUrl } from '../config';
 import { maskId, formatEditionName } from '../utils/helpers';
 
 export function compareVersions(v1: string, v2: string): number {
@@ -747,7 +747,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const syncProfile = async (username: string) => {
     setIsSyncing(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/get_profile.php?username=${encodeURIComponent(username)}`);
+      const response = await fetch(`${getApiBaseUrl()}/get_profile.php?username=${encodeURIComponent(username)}`);
       const data = await response.json();
       if (data.success && data.user) {
         setIsStoreConnected(true);
@@ -832,7 +832,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
           // Update Lua script if modified on server
           const res = await fetch(
-            `${API_BASE_URL}/redeem.php?action=get_lua&key=${encodeURIComponent(game.order_id)}&steamid=${encodeURIComponent(activeSteamUser)}&username=${encodeURIComponent(username)}`,
+            `${getApiBaseUrl()}/redeem.php?action=get_lua&key=${encodeURIComponent(game.order_id)}&steamid=${encodeURIComponent(activeSteamUser)}&username=${encodeURIComponent(username)}`,
             { headers: { 'ngrok-skip-browser-warning': 'true' } }
           );
           if (res.ok) {
@@ -875,7 +875,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const fetchOwnedGames = async (username: string, silent = false) => {
     if (!silent) setIsLoadingGames(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/user-library.php?username=${encodeURIComponent(username)}`);
+      const response = await fetch(`${getApiBaseUrl()}/user-library.php?username=${encodeURIComponent(username)}`);
       const data = await response.json();
       if (data.success) {
         const gameIds = data.games.map((g: any) => g.game_id);
@@ -1016,7 +1016,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       setRedeemingOrderId(game.order_id);
       setIsLoadingGames(true);
-      const response = await fetch(`${API_BASE_URL}/redeem.php?action=redeem&key=${encodeURIComponent(game.order_id)}&steamid=${encodeURIComponent(activeSteamUser)}&username=${encodeURIComponent(user?.username || '')}`);
+      const response = await fetch(`${getApiBaseUrl()}/redeem.php?action=redeem&key=${encodeURIComponent(game.order_id)}&steamid=${encodeURIComponent(activeSteamUser)}&username=${encodeURIComponent(user?.username || '')}`);
       const data = await response.json();
 
       if (data.success) {
@@ -1278,7 +1278,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setIsRedeeming(true);
     try {
-      const checkRes = await fetch(`${API_BASE_URL}/redeem.php?action=check&key=${encodeURIComponent(cleanKey)}&username=${encodeURIComponent(user?.username || '')}`);
+      const checkRes = await fetch(`${getApiBaseUrl()}/redeem.php?action=check&key=${encodeURIComponent(cleanKey)}&username=${encodeURIComponent(user?.username || '')}`);
       if (!checkRes.ok) {
         throw new Error('ไม่พบข้อมูลคีย์ในระบบ');
       }
@@ -1332,7 +1332,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setIsRedeeming(true);
     try {
-      const claimRes = await fetch(`${API_BASE_URL}/redeem.php?action=claim&key=${encodeURIComponent(cleanKey)}&username=${encodeURIComponent(user?.username || '')}`);
+      const claimRes = await fetch(`${getApiBaseUrl()}/redeem.php?action=claim&key=${encodeURIComponent(cleanKey)}&username=${encodeURIComponent(user?.username || '')}`);
       const claimData = await claimRes.json();
 
       if (claimData.success) {
@@ -1393,7 +1393,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (!activeSteamUser || activeSteamUser === 'Unknown') return;
 
       const usernameParam = user?.username ? `&username=${encodeURIComponent(user.username)}` : '';
-      const response = await fetch(`${API_BASE_URL}/redeem.php?action=check_revoked&steamid=${encodeURIComponent(activeSteamUser)}${usernameParam}`);
+      const response = await fetch(`${getApiBaseUrl()}/redeem.php?action=check_revoked&steamid=${encodeURIComponent(activeSteamUser)}${usernameParam}`);
       const data = await response.json();
 
       if (data.success && data.revoked) {
@@ -1430,7 +1430,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
           // Acknowledge directly on the server database so it persists across all computers
           try {
-            await fetch(`${API_BASE_URL}/redeem.php?action=ack_revoked&steamid=${encodeURIComponent(activeSteamUser)}${usernameParam}`);
+            await fetch(`${getApiBaseUrl()}/redeem.php?action=ack_revoked&steamid=${encodeURIComponent(activeSteamUser)}${usernameParam}`);
           } catch (ackErr) {
             console.warn('Failed to sync revocation ack to server:', ackErr);
           }
@@ -1455,7 +1455,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/redeem.php?action=get_lua&key=${encodeURIComponent(game.order_id)}&steamid=${encodeURIComponent(activeSteamUser)}&username=${encodeURIComponent(user?.username || '')}`);
+      const response = await fetch(`${getApiBaseUrl()}/redeem.php?action=get_lua&key=${encodeURIComponent(game.order_id)}&steamid=${encodeURIComponent(activeSteamUser)}&username=${encodeURIComponent(user?.username || '')}`);
       if (!response.ok) {
         throw new Error('Failed to fetch LUA from server');
       }
@@ -1568,7 +1568,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       let extraDepotIds: string[] = [];
       let hasManifestsOnServer = false;
       try {
-        const manifestRes = await fetch(`${API_BASE_URL}/manifests.php?action=list&game_id=${encodeURIComponent(game.game_id)}`, {
+        const manifestRes = await fetch(`${getApiBaseUrl()}/manifests.php?action=list&game_id=${encodeURIComponent(game.game_id)}`, {
           headers: { 'ngrok-skip-browser-warning': 'true' }
         });
         if (manifestRes.ok) {
@@ -1675,7 +1675,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
 
       const listRes = await fetch(
-        `${API_BASE_URL}/manifests.php?action=list&app_id=${encodeURIComponent(game.game_id)}&game_id=${encodeURIComponent(game.game_id)}`,
+        `${getApiBaseUrl()}/manifests.php?action=list&app_id=${encodeURIComponent(game.game_id)}&game_id=${encodeURIComponent(game.game_id)}`,
         { headers: { 'ngrok-skip-browser-warning': 'true' } }
       );
       const listData = await listRes.json();
@@ -1700,12 +1700,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
 
         let targetDownloadUrl = listData.zip_download_url || listData.manifest_zip_url;
-        const serverFallbackUrl = `${API_BASE_URL}/manifests.php?action=download_zip&app_id=${encodeURIComponent(game.game_id)}&game_id=${encodeURIComponent(game.game_id)}`;
+        const serverFallbackUrl = `${getApiBaseUrl()}/manifests.php?action=download_zip&app_id=${encodeURIComponent(game.game_id)}&game_id=${encodeURIComponent(game.game_id)}`;
 
         if (!targetDownloadUrl) {
           targetDownloadUrl = serverFallbackUrl;
         } else if (targetDownloadUrl.startsWith('api/') || targetDownloadUrl.startsWith('../api/')) {
-          targetDownloadUrl = `${API_BASE_URL}/${targetDownloadUrl.replace(/^(\.\.\/)+/, '').replace(/^api\//, '')}`;
+          targetDownloadUrl = `${getApiBaseUrl()}/${targetDownloadUrl.replace(/^(\.\.\/)+/, '').replace(/^api\//, '')}`;
         }
 
         if (onProgress) {
@@ -1755,7 +1755,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const m = listData.manifests[i];
           try {
             const dlRes = await fetch(
-              `${API_BASE_URL}/manifests.php?action=download&app_id=${encodeURIComponent(game.game_id)}&game_id=${encodeURIComponent(game.game_id)}&filename=${encodeURIComponent(m.filename)}&file=${encodeURIComponent(m.filename)}`,
+              `${getApiBaseUrl()}/manifests.php?action=download&app_id=${encodeURIComponent(game.game_id)}&game_id=${encodeURIComponent(game.game_id)}&filename=${encodeURIComponent(m.filename)}&file=${encodeURIComponent(m.filename)}`,
               { headers: { 'ngrok-skip-browser-warning': 'true' } }
             );
             if (!dlRes.ok) {
@@ -1936,7 +1936,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           storageScore: 2
         };
 
-        const res = await fetch(`${API_BASE_URL}/update-specs.php`, {
+        const res = await fetch(`${getApiBaseUrl()}/update-specs.php`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -2023,7 +2023,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsInitializing(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/login.php`, {
+      const response = await fetch(`${getApiBaseUrl()}/login.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: loginUsername, password: loginPassword })
@@ -2068,7 +2068,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsInitializing(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/register.php`, {
+      const response = await fetch(`${getApiBaseUrl()}/register.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

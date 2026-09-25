@@ -4,7 +4,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Minus, Square, X } from 'lucide-react';
 import { AppProvider, useAppContext } from './context/AppContext';
-import { API_BASE_URL, APP_VERSION, resolveApiEndpoint } from './config';
+import { APP_VERSION, resolveApiEndpoint, getApiBaseUrl } from './config';
 
 // Import Modular Components
 import { Sidebar } from './components/Sidebar';
@@ -198,7 +198,7 @@ function AppContent() {
   useEffect(() => {
     const pingServer = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/digimanager_settings.php`, {
+        const res = await fetch(`${getApiBaseUrl()}/digimanager_settings.php`, {
           headers: { 'ngrok-skip-browser-warning': 'true' },
           signal: AbortSignal.timeout(4000)
         });

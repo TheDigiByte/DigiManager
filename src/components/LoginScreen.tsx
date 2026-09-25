@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { useAppContext } from '../context/AppContext';
-import { API_BASE_URL, getApiBaseUrl } from '../config';
+import { getApiBaseUrl } from '../config';
 import { Tooltip, InfoTooltip } from './Tooltip';
 
 export const LoginScreen: React.FC = () => {
@@ -374,7 +374,7 @@ export const LoginScreen: React.FC = () => {
     let isMounted = true;
     const fetchSlides = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/get_login_slideshow.php`);
+        const response = await fetch(`${getApiBaseUrl()}/get_login_slideshow.php`);
         const data = await response.json();
         if (isMounted && data && data.success && Array.isArray(data.screenshots) && data.screenshots.length > 0) {
           setSlides(data.screenshots);
@@ -446,7 +446,7 @@ export const LoginScreen: React.FC = () => {
     setTwoFaErrorMsg(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/login.php`, {
+      const response = await fetch(`${getApiBaseUrl()}/login.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -563,7 +563,7 @@ export const LoginScreen: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/login.php`, {
+      const response = await fetch(`${getApiBaseUrl()}/login.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: loginUsername.trim(), password: loginPassword })
@@ -688,7 +688,7 @@ export const LoginScreen: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/register.php`, {
+      const response = await fetch(`${getApiBaseUrl()}/register.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -732,7 +732,7 @@ export const LoginScreen: React.FC = () => {
 
     setIsResetting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/verify_recovery.php`, {
+      const response = await fetch(`${getApiBaseUrl()}/verify_recovery.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -796,7 +796,7 @@ export const LoginScreen: React.FC = () => {
 
     setIsResetting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/reset_password.php`, {
+      const response = await fetch(`${getApiBaseUrl()}/reset_password.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1000,7 +1000,7 @@ export const LoginScreen: React.FC = () => {
             </h3>
             {slides[currentSlideIndex].game_id ? (
               <button
-                onClick={() => openUrl(`${API_BASE_URL.replace('/api', '')}/details.php?id=${slides[currentSlideIndex].game_id}`)}
+                onClick={() => openUrl(`${getApiBaseUrl().replace('/api', '')}/details.php?id=${slides[currentSlideIndex].game_id}`)}
                 className="inline-flex items-center gap-1.5 text-sm text-zinc-300 hover:text-white hover:underline transition-all duration-200"
               >
                 <span>ดูรายละเอียด</span>

@@ -33,7 +33,7 @@ function getInitialApiBaseUrl(): string {
 export let API_BASE_URL = getInitialApiBaseUrl();
 
 // เวอร์ชันปัจจุบันของโปรแกรมเดสก์ท็อป DigiManager
-export const APP_VERSION = '0.2.1';
+export const APP_VERSION = '0.2.2';
 
 /**
  * ดึง API Base URL ที่กำลังใช้งานอยู่

@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { useAppContext, OwnedGameItem } from '../context/AppContext';
-import { API_BASE_URL, getApiBaseUrl } from '../config';
+import { getApiBaseUrl } from '../config';
 import { GameCard } from './GameCard';
 import { GameContextMenu } from './GameContextMenu';
 
