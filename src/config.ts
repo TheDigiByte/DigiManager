@@ -9,8 +9,8 @@
 export const DEFAULT_API_BASE_URL = 'https://equipped-euro-grounds-ranch.trycloudflare.com/D/api';
 
 // 2. URL สำหรับชี้เป้า API จาก GitHub Raw (Zero-Rebuild Dynamic Resolution)
-export const REMOTE_ENDPOINT_URL = 'https://raw.githubusercontent.com/DigiByte-PC/DigiManager/main/endpoint.json';
-export const REMOTE_ENDPOINT_FALLBACK = 'https://raw.githubusercontent.com/TheDigiByte/DigiManager/main/endpoint.json';
+export const REMOTE_ENDPOINT_URL = 'https://raw.githubusercontent.com/TheDigiByte/DigiManager/main/endpoint.json';
+export const REMOTE_ENDPOINT_FALLBACK = 'https://raw.githubusercontent.com/DigiByte-PC/DigiManager/main/endpoint.json';
 
 // Local Storage Key สำหรับบันทึก URL ปัจจุบัน
 const STORAGE_KEY = 'digimanager_api_url';
