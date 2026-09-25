@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { listen } from '@tauri-apps/api/event';
 import { useAppContext } from '../context/AppContext';
+import { resolveApiEndpoint } from '../config';
 import { Tooltip } from './Tooltip';
 
 export const SystemTab: React.FC = () => {
@@ -279,9 +280,22 @@ export const SystemTab: React.FC = () => {
 
       {/* 2. Services & Network Status */}
       <div className="space-y-3 font-sans">
-        <div className="flex flex-col gap-0.5">
-          <h3 className="text-sm font-semibold text-zinc-200">สถานะบริการและเครือข่าย</h3>
-          <p className="text-xs text-zinc-400">สถานะการเชื่อมต่อไปยังระบบหลักของ DigiByte</p>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-0.5">
+            <h3 className="text-sm font-semibold text-zinc-200">สถานะบริการและเครือข่าย</h3>
+            <p className="text-xs text-zinc-400">สถานะการเชื่อมต่อไปยังระบบหลักของ DigiByte</p>
+          </div>
+          <button
+            type="button"
+            onClick={async () => {
+              await resolveApiEndpoint();
+              await fetchSystemStatusAndConfig(false);
+            }}
+            className="text-[11px] text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800/60 hover:bg-zinc-800 border border-zinc-700/40 transition-colors"
+          >
+            <RefreshCw className="w-3 h-3" />
+            <span>ตรวจสอบการเชื่อมต่อใหม่</span>
+          </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

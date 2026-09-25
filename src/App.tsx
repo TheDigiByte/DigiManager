@@ -50,6 +50,7 @@ function AppContent() {
     if (isRetryingConnect) return;
     setIsRetryingConnect(true);
     try {
+      await resolveApiEndpoint();
       await fetchSystemStatusAndConfig(true);
     } catch (e) {
       console.error(e);
