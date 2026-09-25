@@ -6,7 +6,7 @@
  */
 
 // 1. Fallback URL ค่าเริ่มต้น (หากยังไม่เคยต่อเน็ตหรืออ่านจากคลาวด์ไม่ได้)
-export const DEFAULT_API_BASE_URL = 'https://preston-cio-gear-band.trycloudflare.com/D/api';
+export const DEFAULT_API_BASE_URL = 'https://equipped-euro-grounds-ranch.trycloudflare.com/D/api';
 
 // 2. URL สำหรับชี้เป้า API จาก GitHub Raw (Zero-Rebuild Dynamic Resolution)
 export const REMOTE_ENDPOINT_URL = 'https://raw.githubusercontent.com/DigiByte-PC/DigiManager/main/endpoint.json';
