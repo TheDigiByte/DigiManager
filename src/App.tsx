@@ -4,7 +4,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Minus, Square, X } from 'lucide-react';
 import { AppProvider, useAppContext } from './context/AppContext';
-import { API_BASE_URL, APP_VERSION } from './config';
+import { API_BASE_URL, APP_VERSION, resolveApiEndpoint } from './config';
 
 // Import Modular Components
 import { Sidebar } from './components/Sidebar';
@@ -63,6 +63,13 @@ function AppContent() {
   // 1. Check Session & Restore state on initial startup
   useEffect(() => {
     const checkSession = async () => {
+      // Auto-resolve dynamic server API endpoint from GitHub pointer/cache before network requests
+      try {
+        await resolveApiEndpoint();
+      } catch (e) {
+        console.warn('Endpoint resolution fallback:', e);
+      }
+
       // Immediately check for update on app startup
       checkAppUpdateGlobal({ forceModal: true });
 

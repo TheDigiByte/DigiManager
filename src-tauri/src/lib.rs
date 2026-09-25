@@ -2068,6 +2068,7 @@ pub fn run() {
 
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
+                .tooltip("DigiManager")
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| {
@@ -2101,7 +2102,12 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            // 2. Check if launched with --minimized / --silent
+            // 2. Refresh autostart registry to keep current exe path up to date if enabled
+            if get_autostart_status() {
+                let _ = set_autostart_status(true);
+            }
+
+            // 3. Check if launched with --minimized / --silent
             let args: Vec<String> = std::env::args().collect();
             if args.iter().any(|arg| arg == "--minimized" || arg == "--silent") {
                 if let Some(window) = app.get_webview_window("main") {
