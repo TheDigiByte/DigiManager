@@ -6,9 +6,10 @@
  */
 
 // 1. Fallback URL ค่าเริ่มต้น (หากยังไม่เคยต่อเน็ตหรืออ่านจากคลาวด์ไม่ได้)
-export const DEFAULT_API_BASE_URL = 'https://equipped-euro-grounds-ranch.trycloudflare.com/D/api';
+export const DEFAULT_API_BASE_URL = 'https://sally-gardening-likewise-perform.trycloudflare.com/D/api';
 
-// 2. URL สำหรับชี้เป้า API จาก GitHub Raw (Zero-Rebuild Dynamic Resolution)
+// 2. URL สำหรับชี้เป้า API จาก GitHub (Zero-Rebuild Dynamic Resolution)
+export const GITHUB_API_ENDPOINT = 'https://api.github.com/repos/TheDigiByte/DigiManager/contents/endpoint.json';
 export const REMOTE_ENDPOINT_URL = 'https://raw.githubusercontent.com/TheDigiByte/DigiManager/main/endpoint.json';
 export const REMOTE_ENDPOINT_FALLBACK = 'https://raw.githubusercontent.com/DigiByte-PC/DigiManager/main/endpoint.json';
 
@@ -78,12 +79,36 @@ export async function testApiUrl(url: string): Promise<boolean> {
  * มี Timeout สั้นๆ เพื่อไม่ให้หน่วงหน้าจอ และเซฟลงแคชทันที
  */
 export async function resolveApiEndpoint(): Promise<string> {
+  // 1. ลอง GitHub API (realtime ไม่มี cache ดีเลย์)
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const res = await fetch(GITHUB_API_ENDPOINT, {
+      signal: controller.signal,
+      headers: { Accept: 'application/vnd.github.v3.raw' },
+      cache: 'no-store'
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && typeof data.api_url === 'string' && data.api_url.startsWith('http')) {
+        const resolved = data.api_url.trim().replace(/\/+$/, '');
+        if (resolved) {
+          setApiBaseUrl(resolved);
+          console.log(`[DigiManager] Auto-resolved API URL from GitHub API: ${resolved}`);
+          return resolved;
+        }
+      }
+    }
+  } catch (e) {}
+
+  // 2. ลอง Fallback Raw URLs
   const urlsToTry = [REMOTE_ENDPOINT_URL, REMOTE_ENDPOINT_FALLBACK];
 
   for (const targetUrl of urlsToTry) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
 
       const res = await fetch(`${targetUrl}?_t=${Date.now()}`, {
         signal: controller.signal,
@@ -97,7 +122,7 @@ export async function resolveApiEndpoint(): Promise<string> {
           const resolved = data.api_url.trim().replace(/\/+$/, '');
           if (resolved) {
             setApiBaseUrl(resolved);
-            console.log(`[DigiManager] Auto-resolved API URL from GitHub: ${resolved}`);
+            console.log(`[DigiManager] Auto-resolved API URL from GitHub Raw: ${resolved}`);
             return resolved;
           }
         }
