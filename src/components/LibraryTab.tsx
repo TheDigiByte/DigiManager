@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { useAppContext, OwnedGameItem } from '../context/AppContext';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, getApiBaseUrl } from '../config';
 import { GameCard } from './GameCard';
 import { GameContextMenu } from './GameContextMenu';
 
@@ -262,7 +262,7 @@ export const LibraryTab: React.FC = () => {
           </div>
           {ownedGames.length === 0 && (
             <button
-              onClick={() => openUrl(API_BASE_URL.replace('/api', ''))}
+              onClick={() => openUrl(getApiBaseUrl().replace('/api', ''))}
               className="px-5 py-2.5 bg-zinc-50 hover:bg-zinc-200 text-zinc-950 font-bold rounded-xl text-xs shadow-sm transition-colors"
             >
               เลือกซื้อเกมบนหน้าร้านค้าเว็บ

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import { invoke } from '@tauri-apps/api/core';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { listen } from '@tauri-apps/api/event';
-import { API_BASE_URL, APP_VERSION } from '../config';
+import { API_BASE_URL, APP_VERSION, getApiBaseUrl } from '../config';
 import { maskId, formatEditionName } from '../utils/helpers';
 
 export function compareVersions(v1: string, v2: string): number {
@@ -619,7 +619,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const handleDownloadAppUpdate = async (url?: string) => {
     const targetUrl = url || updateInfo?.downloadUrl;
     if (!targetUrl || !targetUrl.startsWith('http')) {
-      openUrl(API_BASE_URL.replace('/api', ''));
+      openUrl(getApiBaseUrl().replace('/api', ''));
       return;
     }
 
@@ -670,7 +670,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const checkAppUpdateGlobal = async (opts?: { manual?: boolean; forceModal?: boolean }) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/digimanager_settings.php`);
+      const res = await fetch(`${getApiBaseUrl()}/digimanager_settings.php`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await res.json();
       if (data.success && data.data) {
         setIsStoreConnected(true);
@@ -1850,7 +1852,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/digimanager_settings.php`);
+      const res = await fetch(`${getApiBaseUrl()}/digimanager_settings.php`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       const data = await res.json();
       if (data.success && data.data) {
         setSystemPatchConfig(data.data);

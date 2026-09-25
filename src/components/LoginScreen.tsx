@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { useAppContext } from '../context/AppContext';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, getApiBaseUrl } from '../config';
 import { Tooltip, InfoTooltip } from './Tooltip';
 
 export const LoginScreen: React.FC = () => {
